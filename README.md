@@ -32,14 +32,29 @@ No stack handy? `node mock/server.mjs` stands in for the API with the same respo
 hash chain (`MOCK_AUTH=oidc` for token mode, `MOCK_DEMO=1` for hosted-demo limits, `MOCK_PORT` to move it).
 `POST /__tamper` on the mock edits a ledger row so you can watch **Verify chain** fail.
 
-## Run it against ControlPlane
+## Integrate ControlPlane
 
-The real API lives in [ControlPlane](https://github.com/Lanier-Developments/ControlPlane). Bring it up,
-then start the dev server here — the proxy already points at `http://localhost:8000`:
+The real API lives in [ControlPlane](https://github.com/Lanier-Developments/ControlPlane). Pull it into
+this repo as a submodule (pinned to a known commit, updated deliberately):
 
 ```bash
-git clone https://github.com/Lanier-Developments/ControlPlane
-cd ControlPlane
+git submodule add https://github.com/Lanier-Developments/ControlPlane backend
+git commit -m "Add ControlPlane backend as a submodule"
+# fresh clones then need:  git clone --recurse-submodules <this repo>
+# update the pin later:    git -C backend pull && git add backend && git commit
+```
+
+Prefer to keep the repos independent? A sibling checkout works the same way — only the `cd` below changes:
+
+```bash
+git clone https://github.com/Lanier-Developments/ControlPlane   # instead of the submodule
+```
+
+Either way, bring the backend up, then start the dev server here — the proxy already points at
+`http://localhost:8000`:
+
+```bash
+cd backend               # or your ControlPlane checkout
 cp .env.example .env     # defaults: persona auth, Ollama on localhost
 make up                  # Postgres via docker compose (or up-local-llm to run Ollama in compose too)
 make pull-models         # nomic-embed-text + llama3.1:8b into Ollama
